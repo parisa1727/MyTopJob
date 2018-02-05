@@ -1,0 +1,53 @@
+---
+title: "MyTopJob"
+author: "Parisa Lak"
+date: '2018-02-04'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r cars}
+library(data.table)  
+files <- list.files(path = "/Users/parisalak/PycharmProjects/Data In/scraper",pattern = ".csv")
+temp <- lapply(files, fread, sep=",")
+mydata <- rbindlist( temp )
+View(mydata)
+```
+
+## Selected Plots
+
+```{r pressure, echo=FALSE}
+#Wordcloud of the most interesting job titles including data in the title
+data<-mydata[which(mydata$Name %like% "Data"),]
+# Load
+library("tm")
+library("SnowballC")
+library("wordcloud")
+library("RColorBrewer")
+docs <- Corpus(VectorSource(data$Name))
+# Convert the text to lower case
+docs <- tm_map(docs, content_transformer(tolower))
+# Remove numbers
+docs <- tm_map(docs, removeNumbers)
+# Remove punctuations
+docs <- tm_map(docs, removePunctuation)
+# Eliminate extra white spaces
+docs <- tm_map(docs, stripWhitespace)
+dtm <- TermDocumentMatrix(docs)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+set.seed(1234)
+wordcloud(words = d$word, freq = d$freq, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
