@@ -1,0 +1,35 @@
+---
+title: "MyTopJob"
+author: "Parisa Lak"
+date: '2018-02-04'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r cars}
+library(data.table)  
+files <- list.files(path = "/Users/parisalak/PycharmProjects/Data In/scraper",pattern = ".csv")
+temp <- lapply(files, fread, sep=",")
+mydata <- rbindlist( temp )
+View(mydata)
+```
+
+## Selected Plots
+
+```{r pressure, echo=FALSE}
+#Most common job titles in banks
+data<-mydata[which(mydata$Company %like% "bank"),]
+library(easyGgplot2)
+ggplot2.barplot(data=data, xName="Name",xtickLabelRotation=20)
+
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
